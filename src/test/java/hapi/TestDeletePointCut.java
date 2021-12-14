@@ -1,8 +1,9 @@
-package io.floodplain.hapi.cdc;
+package hapi;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.interceptor.api.Hook;
 import ca.uhn.fhir.interceptor.api.Pointcut;
+import ca.uhn.fhir.rest.api.DeleteCascadeModeEnum;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
@@ -15,11 +16,15 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.hl7.fhir.instance.model.api.IIdType;
 import org.hl7.fhir.r4.model.HumanName;
+import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Resource;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import static org.hl7.fhir.r4.model.Enumerations.AdministrativeGender.FEMALE;
 import static org.hl7.fhir.r4.model.Enumerations.AdministrativeGender.MALE;
 
 public class TestDeletePointCut {
@@ -62,11 +67,31 @@ public class TestDeletePointCut {
 
         ourCtx.getRestfulClientFactory().setSocketTimeout(240 * 1000);
         ourCtx.getRestfulClientFactory().setServerValidationMode(ServerValidationModeEnum.NEVER);
-        IGenericClient client = ourCtx.newRestfulGenericClient("http://localhost:$ourPort");
+        IGenericClient client = ourCtx.newRestfulGenericClient("http://localhost:" + ourPort);
 
         Resource patient = new Patient().addName(new HumanName().addGiven("John").setFamily("Doe")).setGender(MALE).setId("123");
         MethodOutcome createResult = client.create().resource(patient).execute();
-        System.err.println("created: "+created);
+        IIdType createdId = createResult.getId();
+//        Bundle b = client.search().forResource(Patient.class).returnBundle(Bundle.class).execute();
+//
+//        String id = b.getEntry().get(0).getId();
+
+        Resource updatedPatient = new Patient().addName(new HumanName().addGiven("Jane").setFamily("Doe")).setGender(FEMALE).setIdElement((IdType) createdId);
+        MethodOutcome updateResult = client.update().resource(updatedPatient).execute();
+
+        client.delete()
+                .resourceById(createdId)
+                .cascade(DeleteCascadeModeEnum.DELETE)
+                .execute();
+
+        System.err.println("created: " + created);
+        System.err.println("updated: " + updated);
+        System.err.println("deleted: " + deleted);
+
+        Assertions.assertEquals(1, created);
+        Assertions.assertEquals(1, updated);
+//        ignored for now:
+//        Assertions.assertEquals(1,deleted);
 
 
     }

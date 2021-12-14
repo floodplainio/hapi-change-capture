@@ -1,42 +1,53 @@
-package io.floodplain.hapi.cdc.publish
+package io.floodplain.hapi.cdc.publish.kafka
 
-import io.floodplain.hapi.cdc.FHIRSnapshot
-import io.floodplain.hapi.cdc.Message
-import io.floodplain.hapi.cdc.MessagePublisher
+import io.floodplain.hapi.cdc.publish.Message
+import io.floodplain.hapi.cdc.publish.MessagePublisher
+import org.apache.kafka.common.serialization.ByteArrayDeserializer
+import org.apache.kafka.common.serialization.StringDeserializer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.boot.autoconfigure.kafka.KafkaProperties
 import org.springframework.core.env.Environment
-
 import org.springframework.kafka.config.TopicBuilder
 import org.springframework.kafka.core.ConsumerFactory
+import org.springframework.kafka.core.DefaultKafkaConsumerFactory
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
 import java.util.concurrent.atomic.AtomicLong
 import javax.annotation.PostConstruct
 
+
 @Service
-@ConditionalOnProperty(value = ["floodplain.kafka.enabled"], havingValue = "true", matchIfMissing = false)
-class KafkaPublisher(
-    val kafkaTemplate: KafkaTemplate<String, ByteArray>,
-    val consumerFactory: ConsumerFactory<String, ByteArray>
-) : MessagePublisher {
+class KafkaPublisher : MessagePublisher {
+
     private var logger: Logger = LoggerFactory.getLogger(KafkaPublisher::class.java)
 
     private val updateCounter = AtomicLong(0)
     private val deleteCounter = AtomicLong(0)
 
     @Autowired
-    private val env: Environment? = null
+    private lateinit var kafkaTemplate: KafkaTemplate<String, ByteArray>
 
-    val consumer = consumerFactory.createConsumer()
+    @Autowired
+    private lateinit var kafkaProperties: KafkaProperties
+
+    @Autowired
+    private val env: Environment? = null
 
     val existingTopics = mutableListOf<String>()
 
     @PostConstruct
     fun initialize() {
+        val consumer = consumerFactory().createConsumer()
         existingTopics.addAll(consumer.listTopics().keys)
+    }
+
+    //    @Bean
+    fun consumerFactory(): ConsumerFactory<String, ByteArray> {
+        return DefaultKafkaConsumerFactory(
+            kafkaProperties.buildConsumerProperties(), StringDeserializer(), ByteArrayDeserializer()
+        )
     }
 
     private fun createIfMissing(topic: String) {

@@ -1,4 +1,4 @@
-quin:
+floodplain:
   kafka:
     enabled: true
 
