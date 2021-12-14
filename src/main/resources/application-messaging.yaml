@@ -1,0 +1,30 @@
+quin:
+  kafka:
+    enabled: true
+
+spring:
+  kafka:
+    consumer: #consumer is not needed here (system-fhir only writes to kafka)
+      bootstrap-servers: ${KAFKA_BOOTSTRAP}
+      group-id: group_id
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
+    producer:
+      bootstrap-servers: ${KAFKA_BOOTSTRAP}
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.ByteArraySerializer
+    properties:
+      sasl:
+        mechanism: SCRAM-SHA-512
+      ssl:
+        truststore:
+          location: /truststore/ca.p12
+          password: ${KAFKA_TRUSTSTORE_PASSWORD}
+          type: PKCS12
+        keystore:
+          location: /kafkauser/user.p12
+          password: ${KAFKA_KEYSTORE_PASSWORD}
+          type: PKCS12
+      security:
+        protocol: SSL
