@@ -12,6 +12,7 @@ import org.springframework.core.env.Environment
 import org.springframework.kafka.config.TopicBuilder
 import org.springframework.kafka.core.ConsumerFactory
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory
+import org.springframework.kafka.core.KafkaAdmin
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
 import java.util.concurrent.atomic.AtomicLong
@@ -35,6 +36,9 @@ class KafkaPublisher : MessagePublisher {
     @Autowired
     private val env: Environment? = null
 
+    @Autowired
+    private lateinit var kafkaAdmin: KafkaAdmin
+
     val existingTopics = mutableListOf<String>()
 
     @PostConstruct
@@ -53,7 +57,8 @@ class KafkaPublisher : MessagePublisher {
     private fun createIfMissing(topic: String) {
         if (!existingTopics.contains(topic)) {
             logger.info("Topic $topic is missing, attempting to create")
-            TopicBuilder.name(topic).compact().partitions(1).build()
+            val newTopic = TopicBuilder.name(topic).compact().partitions(1).build()
+            kafkaAdmin.createOrModifyTopics(newTopic)
             logger.info("Topic $topic created successfully")
             existingTopics.add(topic)
         }

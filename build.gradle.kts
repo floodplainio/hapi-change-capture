@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "io.floodplain"
-version = "0.0.13-SNAPSHOT"
+version = "0.0.14-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 fun isReleaseVersion(): Boolean {
@@ -28,6 +28,7 @@ dependencies {
 //	implementation("org.springframework.boot:spring-context")
 
 //	implementation("org.springframework.boot:spring-boot-starter")
+	implementation("org.apache.commons:commons-compress:1.21")
 	implementation("org.springframework:spring-context-support")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
@@ -40,8 +41,6 @@ dependencies {
 	testImplementation("org.eclipse.jetty:jetty-util")
 
 	implementation("ca.uhn.hapi.fhir:hapi-fhir-base:${project.property("hapiFhirVersion")}")
-//	implementation("ca.uhn.hapi.fhir:hapi-fhir-server:${project.property("hapiFhirVersion")}")
-//	implementation("ca.uhn.hapi.fhir:hapi-fhir-spring-boot-starter:${project.property("hapiFhirVersion")}")
 	testImplementation("ca.uhn.hapi.fhir:hapi-fhir-jaxrsserver-base:${project.property("hapiFhirVersion")}")
 
 //	compile 'ca.uhn.hapi.fhir:hapi-fhir-structures-dstu2:${project.version}'

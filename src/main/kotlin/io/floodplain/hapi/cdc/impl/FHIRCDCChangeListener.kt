@@ -57,14 +57,14 @@ class FHIRCDCChangeListener : ServerOperationInterceptorAdapter() {
     @Hook(Pointcut.STORAGE_PRECOMMIT_RESOURCE_DELETED)
     override fun resourceDeleted(request: RequestDetails, theResource: IBaseResource?) {
         val resource = theResource!!
-        val key = theResource.idElement.idPart
-        val cdcTopic = cdcTopicName(theResource.fhirType())
+        val key = resource.idElement.idPart
+        val cdcTopic = cdcTopicName(resource.fhirType())
         logger.info("Deleting resource with key: '$key' in the topic '$cdcTopic'")
         val jsonPayload =
             request.fhirContext.newJsonParser().encodeResourceToString(theResource).toByteArray(Charsets.UTF_8)
         publishCDCMessage(cdcTopic, key, jsonPayload, null, ChangeMode.DELETE)
         // write tombstone
-        messagePublisher.delete(cdcTopicName(theResource.fhirType()), key)
+        messagePublisher.delete(cdcTopicName(resource.fhirType()), key)
     }
 
     @Hook(Pointcut.STORAGE_PRECOMMIT_RESOURCE_CREATED)

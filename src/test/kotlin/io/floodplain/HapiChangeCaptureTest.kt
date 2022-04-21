@@ -117,7 +117,7 @@ class HapiChangeCaptureTest {
             .resourceById(foundId)
             .cascade(DeleteCascadeModeEnum.DELETE)
             .execute()
-//        client.e
+// Fails, bug in HAPI, see TestDeletePointCut
 //        assertEquals(3,messages.size)
 //        val deleteBody = objectMapper.readTree(messages[2].body) as ObjectNode
 //        assertFalse(deleteBody.get("before").isNull)

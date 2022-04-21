@@ -90,7 +90,9 @@ public class TestDeletePointCut {
 
         Assertions.assertEquals(1, created);
         Assertions.assertEquals(1, updated);
-//        ignored for now:
+        // ignored for now, filed ticket: https://github.com/hapifhir/hapi-fhir/issues/3204
+        // It is only an issue for in-memory servers, does work on servers backed by a database.
+        // TODO file merge request to HAPI
 //        Assertions.assertEquals(1,deleted);
 
 
