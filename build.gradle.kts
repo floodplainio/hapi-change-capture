@@ -25,9 +25,6 @@ repositories {
 }
 
 dependencies {
-//	implementation("org.springframework.boot:spring-context")
-
-//	implementation("org.springframework.boot:spring-boot-starter")
 	implementation("org.apache.commons:commons-compress:1.21")
 	implementation("org.springframework:spring-context-support")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -95,7 +92,7 @@ fun customizePom(publication: MavenPublication) {
 	}
 }
 
-//val dokkaHtml by tasks.getting(org.jetbrains.dokka.gradle.DokkaTask::class)
+val dokkaHtml by tasks.getting(org.jetbrains.dokka.gradle.DokkaTask::class)
 tasks.dokkaHtml.configure {
 	outputDirectory.set(buildDir.resolve("dokka"))
 }
