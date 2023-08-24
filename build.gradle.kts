@@ -7,7 +7,6 @@ plugins {
 	kotlin("plugin.spring")
 	signing
 	`maven-publish`
-	id("org.jetbrains.dokka")
 }
 
 group = "io.floodplain"
@@ -92,10 +91,6 @@ fun customizePom(publication: MavenPublication) {
 	}
 }
 
-val dokkaHtml by tasks.getting(org.jetbrains.dokka.gradle.DokkaTask::class)
-tasks.dokkaHtml.configure {
-	outputDirectory.set(buildDir.resolve("dokka"))
-}
 
 tasks {
 
@@ -105,15 +100,8 @@ tasks {
 		from(sourceSets.main.get().allSource)
 	}
 
-	val dokkaJar by creating(Jar::class) {
-		dependsOn.add(dokkaHtml)
-		archiveClassifier.set("dokka")
-		from(dokkaHtml.get())
-	}
-
 	artifacts {
 		archives(sourcesJar)
-		archives(dokkaJar)
 		archives(jar)
 	}
 }
@@ -131,10 +119,7 @@ publishing {
 			artifactId = project.name
 			from(components["java"])
 			val sourcesJar by tasks
-			val dokkaJar by tasks
-
 			artifact(sourcesJar)
-			artifact(dokkaJar)
 		}
 	}
 	repositories {
