@@ -1,17 +1,17 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-	id("org.springframework.boot") version "2.5.6"
-	id("io.spring.dependency-management") version "1.0.11.RELEASE"
-	kotlin("jvm") version "1.5.31"
-	kotlin("plugin.spring") version "1.5.31"
+	id("org.springframework.boot")
+	id("io.spring.dependency-management")
+	kotlin("jvm")
+	kotlin("plugin.spring")
 	signing
 	`maven-publish`
-	id("org.jetbrains.dokka") version "1.4.32"
+	id("org.jetbrains.dokka")
 }
 
 group = "io.floodplain"
-version = "0.0.14-SNAPSHOT"
+version = "0.0.5"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 fun isReleaseVersion(): Boolean {
@@ -32,7 +32,9 @@ dependencies {
 	implementation("org.springframework:spring-context-support")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-	implementation("org.springframework.kafka:spring-kafka:2.8.0")
+	implementation("org.springframework.kafka:spring-kafka:2.8.6")
+	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
+	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.1")
 
 	implementation("ca.uhn.hapi.fhir:org.hl7.fhir.r4:${project.property("hapiFhirVersion")}")
 	implementation("org.slf4j:slf4j-api")
